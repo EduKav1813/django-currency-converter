@@ -23,9 +23,9 @@ def convert(request):
             return JsonResponse({"error": "Required fields: 'from', 'to', 'value'"})
 
         for currency in [currency_from, currency_to]:
-            if currency_from not in conversion_table.keys():
+            if currency not in conversion_table.keys():
                 return JsonResponse(
-                    {"error": f"'Currency '{currency}' is not supported'"}
+                    {"error": f"Currency '{currency}' is not supported"}
                 )
 
         value = float(value)
