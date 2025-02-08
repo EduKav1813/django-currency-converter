@@ -1,7 +1,7 @@
 import json
 
 from django.http import JsonResponse
-from django.shortcuts import HttpResponse
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from .conversion_table import conversion_table
@@ -41,3 +41,7 @@ def convert(request):
 
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+
+def index(request):
+    return render(request, "index.html", {"currencies": list(conversion_table.keys())})

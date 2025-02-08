@@ -1,5 +1,6 @@
-from django.test import TestCase
 import json
+
+from django.test import TestCase
 
 
 class ConvertionTest(TestCase):
@@ -31,7 +32,7 @@ class ConvertionTest(TestCase):
         value = response_data.get("value", "None")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(value, 0.9, f"'{value}' should be '0.9'")
-        
+
     def test_convertion_negative(self):
         payload = {
             "from": "USD",
@@ -46,7 +47,6 @@ class ConvertionTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(error, "Cannot convert negative value: '-1.0'")
 
-
     def test_convertion_zero(self):
         payload = {
             "from": "USD",
@@ -60,7 +60,6 @@ class ConvertionTest(TestCase):
         value = response_data.get("value", "None")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(value, 0.0, f"'{value}' should be '0.0'")
-        
 
     def test_nonsupported_currency(self):
         payload = {
