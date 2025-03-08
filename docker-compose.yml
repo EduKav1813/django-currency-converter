@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+    networks:
+      - currency-converter-net
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "8001:8000"
+    networks:
+      - currency-converter-net
+
+    depends_on:
+      - backend
+
+networks:
+  currency-converter-net:
+    driver: bridge
