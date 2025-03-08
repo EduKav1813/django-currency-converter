@@ -132,7 +132,7 @@
             const from = document.getElementById("currency-from").value;
             const to = document.getElementById("currency-to").value;
             const amount = document.getElementById("amount").value;
-            fetch("/convert/", {
+            fetch("http://127.0.0.1:8000/convert/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

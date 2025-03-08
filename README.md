@@ -6,33 +6,41 @@ Simple web application to convert currencies.
 
 1. Create virtual environemnt (Python >=3.12)
 
-```sh
-python -m venv .venv
-```
+    ```sh
+    python -m venv .venv
+    ```
 
 2. Activate the environment
 
-```sh
-source .venv/bin/activate
-```
+    ```sh
+    source .venv/bin/activate
+    ```
 
 3. Install poetry
 
-```sh
-pip install poetry
-```
+    ```sh
+    pip install poetry
+    ```
 
 4. Install dependencies with poetry
 
-```sh
-poetry install
-```
+    ```sh
+    poetry install
+    ```
 
 ## Start web server
 
-```sh
-./currencyconverter/manage.py runserver
-```
+- Start backend on port 8000:
+
+    ```sh
+    ./backend/manage.py runserver 127.0.0.1:8080
+    ```
+
+- Start frontend on port 8001:
+
+    ```sh
+    ./frontend/manage.py runserver 127.0.0.1:8001
+    ```
 
 ## Run tests
 
