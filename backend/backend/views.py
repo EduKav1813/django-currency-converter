@@ -3,7 +3,7 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from conversion_table import conversion_table
+from .models import CurrencyToUSD
 
 
 @csrf_exempt
@@ -18,14 +18,27 @@ def convert(request):
         currency_to = data.get("to", "").strip()
         value = data.get("value", "")
 
+        # If incomplete data
         if not currency_from or not currency_to or not value:
             return JsonResponse({"error": "Required fields: 'from', 'to', 'value'"})
 
-        for currency in [currency_from, currency_to]:
-            if currency not in conversion_table.keys():
-                return JsonResponse(
-                    {"error": f"Currency '{currency}' is not supported"}
-                )
+        # If convert to self
+        if currency_from == currency_to:
+            return JsonResponse({"value": value})
+
+        # Normal flow
+        try:
+            missing_currency = currency_from
+            currency_to_usd_from = CurrencyToUSD.objects.get(
+                currency_code=currency_from
+            )
+            missing_currency = currency_to
+            currency_to_usd_to = CurrencyToUSD.objects.get(currency_code=currency_to)
+
+        except Exception:
+            return JsonResponse(
+                {"error": f"Currency {missing_currency} is not supported."}
+            )
 
         value = float(value)
         if value < 0:
@@ -34,7 +47,7 @@ def convert(request):
         if value == 0:
             return JsonResponse({"value": 0})
 
-        rate = conversion_table[currency_from] / conversion_table[currency_to]
+        rate = currency_to_usd_from.price / currency_to_usd_to.price
         value = round(float(value) * rate, ndigits=2)
         return JsonResponse({"value": value})
 
@@ -44,4 +57,6 @@ def convert(request):
 
 @csrf_exempt
 def get_available_currencies(request):
-    return JsonResponse({"currencies": list(conversion_table.keys())})
+    return JsonResponse(
+        {"currencies": list(currency.currency_code for currency in CurrencyToUSD.objects.all())}
+    )
