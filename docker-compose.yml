@@ -1,4 +1,45 @@
 services:
+  redis-celery:
+    image: redis:latest
+    container_name: redis-celery
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - currency-converter-net
+  
+  mock-parser-worker:
+    build: ./mock_parser
+    container_name: mock-parser-worker
+    command: poetry run celery -A mock_parser worker --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=redis://redis-celery:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis-celery:6379/0
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    depends_on:
+      - db
+      - redis-celery
+    networks:
+      - currency-converter-net
+
+  mock-parser-beat:
+    build: ./mock_parser
+    container_name: mock-parser-beat
+    command: poetry run celery -A mock_parser beat --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=redis://redis-celery:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis-celery:6379/0
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    depends_on:
+      - redis-celery
+      - mock-parser-worker
+    networks:
+      - currency-converter-net
+
   db:
     image: postgres:15
     container_name: db

@@ -48,7 +48,7 @@ def convert(request):
             return JsonResponse({"value": 0})
 
         rate = currency_to_usd_from.price / currency_to_usd_to.price
-        value = round(float(value) * rate, ndigits=2)
+        value = round(float(value) * float(rate), ndigits=2)
         return JsonResponse({"value": value})
 
     except json.JSONDecodeError:
@@ -58,5 +58,9 @@ def convert(request):
 @csrf_exempt
 def get_available_currencies(request):
     return JsonResponse(
-        {"currencies": list(currency.currency_code for currency in CurrencyToUSD.objects.all())}
+        {
+            "currencies": list(
+                currency.currency_code for currency in CurrencyToUSD.objects.all()
+            )
+        }
     )
