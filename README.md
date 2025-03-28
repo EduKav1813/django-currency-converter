@@ -2,45 +2,38 @@
 
 Simple web application to convert currencies.
 
-## How to install locally
+## Run with Docker Compose
 
-1. Create virtual environemnt (Python >=3.12)
+1. Start the web service
 
-    ```sh
-    python -m venv .venv
-    ```
+```bash
+docker compose --profile web up
+```
 
-2. Activate the environment
+2. Set your ExchangeRate-API key in `.env`
 
-    ```sh
-    source .venv/bin/activate
-    ```
+```env
+EXCHANGE_RATE_API_KEY=your_key
+```
 
-3. Install poetry
+3. Start parser services
 
-    ```sh
-    pip install poetry
-    ```
+```bash
+docker compose --profile parser up
+```
 
-4. Install dependencies with poetry
+(Optional) Start MOCK parser for testing purposes
 
-    ```sh
-    poetry install
-    ```
+```bash
+docker compose --profile mock_parser up
+```
 
-## Start web server
+If running locally, this will start:
 
-- Start backend on port 8000:
-
-    ```sh
-    ./backend/manage.py runserver 127.0.0.1:8080
-    ```
-
-- Start frontend on port 8001:
-
-    ```sh
-    ./frontend/manage.py runserver 127.0.0.1:8001
-    ```
+- Backend on port :8000
+- Frontend on port :8001
+- Postgres database on port :5432
+- Redis (for celery) on port :6379
 
 ## Run tests
 

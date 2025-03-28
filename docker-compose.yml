@@ -4,6 +4,8 @@ services:
     container_name: redis-celery
     profiles:
       - celery
+      - mock_parser
+      - parser
     restart: always
     ports:
       - "6379:6379"
@@ -14,7 +16,7 @@ services:
     build: ./mock_parser
     container_name: mock-parser-worker
     profiles:
-      - mock-parser
+      - mock_parser
     command: poetry run celery -A mock_parser worker --loglevel=info
     environment:
       - CELERY_BROKER_URL=redis://redis-celery:6379/0
@@ -46,11 +48,51 @@ services:
     networks:
       - currency-converter-net
 
+  api-parser-worker:
+    build: ./api_parser
+    container_name: api-parser-worker
+    profiles:
+      - parser
+    command: poetry run celery -A api_parser worker --loglevel=info
+    env_file:
+      - .env
+    environment:
+      - CELERY_BROKER_URL=redis://redis-celery:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis-celery:6379/0
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    depends_on:
+      - db
+      - redis-celery
+    networks:
+      - currency-converter-net
+
+  api-parser-beat:
+    build: ./api_parser
+    container_name: api-parser-beat
+    profiles:
+      - parser
+    command: poetry run celery -A api_parser beat --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=redis://redis-celery:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis-celery:6379/0
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    depends_on:
+      - redis-celery
+      - api-parser-worker
+    networks:
+      - currency-converter-net
+
   db:
     image: postgres:15
     container_name: db
     profiles:
-      - db
+      - web
+      - mock_parser
+      - parser
     restart: always
     environment:
       POSTGRES_DB: mydatabase
