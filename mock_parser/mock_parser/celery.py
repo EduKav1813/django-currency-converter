@@ -9,8 +9,8 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    "update_exchange_rates_every_30_seconds": {
+    "update_exchange_rates_every_5_seconds": {
         "task": "mock_parser.tasks.update_exchange_rates",
-        "schedule": 5.0,  # Run every 30 seconds
+        "schedule": 5.0,  # Run every 5 seconds
     },
 }
